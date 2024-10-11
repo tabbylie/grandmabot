@@ -39,9 +39,15 @@ cmds = bot.tree
 
 @cmds.command(name="pingg", description="yes")
 async def pingg(interaction: discord.Interaction):
-    await interaction.response.send_message("pong!")
+    await interaction.response.send_message("pong! <:GrandmaBlush:1054819990617989240>")
 
-
+@cmds.command(name="off", description="turns off bot")
+async def off(interaction: discord.Interaction):
+    if interaction.user.id != 445049757618929664:
+        await interaction.response.send_message("Sorry, only <@445049757618929664> can use this command!")
+    else:
+        await interaction.response.send_message("Success!", ephemeral=True)
+        await bot.close()
 
 
 bot.run(data["token"])
