@@ -9,7 +9,7 @@ class events(commands.Cog, name='basic'):
         self.bot = bot
 
     @commands.Cog.listener("on_ready")
-    async def please(self):
+    async def ready(self):
         game = discord.Game("Grandma loves you")
         await self.bot.change_presence(status=discord.Status.idle, activity=game)
         print("GrandmaBot booted successfully!")
@@ -21,7 +21,6 @@ class events(commands.Cog, name='basic'):
         
         with (open("words_emojis.json")) as f:
             data = json.load(f)
-        
         
         emojiIDList = data["emojiIDList"]
 
@@ -60,9 +59,9 @@ class events(commands.Cog, name='basic'):
                 data["emojiIDList"] = emojis
                 with open("words_emojis.json", "w") as f:
                     json.dump(data, f, indent=4)
-                await interaction.response.send_message("Success!! Should be added now! Meow!")
+                await interaction.response.send_message("Success!! Should be added now! Meow!", silent=True)
             else:
-                await interaction.response.send_message("You must give an emoji first! Try /add type:emoji, emoji:[the emoji to add]")
+                await interaction.response.send_message("You must give an emoji first! Try /add type:emoji, emoji:[the emoji to add]", silent=True)
         elif (toAdd.value == "word"):
             if (word != "default"):
                 with open("words_emojis.json") as f:
@@ -72,12 +71,41 @@ class events(commands.Cog, name='basic'):
                 data["grandmaWords"] = words
                 with open("words_emojis.json", "w") as f:
                     json.dump(data, f, indent=4)
-                await interaction.response.send_message("Success!! Should be added now! Meow!")
+                await interaction.response.send_message("Success!! Should be added now! Meow!", silent=True)
             else:
-                await interaction.response.send_message("You must give a word first! Try /add type:word word:[the word to add]")
+                await interaction.response.send_message("You must give a word first! Try /add type:word word:[the word to add]", silent=True)
         else:
-            await interaction.response.send_message("Incorrect type! Sorry!")
+            await interaction.response.send_message("Incorrect type! Sorry!", silent=True)
+
+    @appc.command(name="list", description="List all emojis and names!")
+    @appc.describe(list="Emojis, Names, or both?")
+    @appc.choices(list=[
+        appc.Choice(name="Emojis", value="emojis"),
+        appc.Choice(name="Names", value="names"),
+        appc.Choice(name="Both", value="both")
+    ])
+    async def add(self, interaction: discord.Interaction, list: appc.Choice[str]):
+        with open("words_emojis.json") as f:
+            data = json.load(f)
+        choiceData = list.value
+        
+        if (choiceData == "both"):
+            emojisList = data["emojiIDList"]
+            namesList = data["grandmaWords"]
+
+            emojisString = " ".join(emojisList)
+            namesString = ", ".join(namesList)
+
+            await interaction.response.send_message(namesString, silent=True)
+            await interaction.followup.send(emojisString, silent=True)
+        elif (choiceData == "names"):
+            fullString = ", ".join(data["grandmaWords"])
+
+            await interaction.response.send_message(fullString, silent=True)
+        elif (choiceData == "emojis"):
+            fullString = " ".join(data["emojiIDList"])
+
+            await interaction.response.send_message(fullString, silent=True)
 
 async def setup(bot):
     await bot.add_cog(events(bot))
-

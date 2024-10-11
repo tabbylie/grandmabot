@@ -3,12 +3,13 @@ from discord.ext import commands
 from discord import app_commands as appc
 import json
 
-MY_GUILD = discord.Object(id=860152226872557639)
-
-
-
 with open("config.json", "r") as f:
     data = json.load(f)
+
+MY_GUILD = discord.Object(id=data["GUILD_ID"])
+
+
+
 
 class MyClient(commands.Bot):
     def __init__(self, *, prefix,  intents: discord.Intents, initial_extensions: list[str]):
